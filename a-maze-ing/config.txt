@@ -1,0 +1,18 @@
+# A-Maze-ing default configuration.
+# One KEY=VALUE per line. Blank lines and lines starting with # are ignored.
+
+WIDTH=20
+HEIGHT=15
+
+# Entry and exit as x,y (0-indexed). Must be inside the maze and differ.
+ENTRY=0,0
+EXIT=19,14
+
+# Output file for the hexadecimal maze representation.
+OUTPUT_FILE=maze.txt
+
+# PERFECT=True -> exactly one path between entry and exit.
+PERFECT=False
+
+# Optional. An integer SEED makes the maze reproducible.
+# Omit this line for a random maze (the seed used is still recoverable).

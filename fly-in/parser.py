@@ -144,7 +144,23 @@ class Parser():
             raise ValueError(f"Connection references unknown zone: {name1!r}")
         if name2 not in self.zones:
             raise ValueError(f"Connection references unknown zone: {name2!r}")
-        
+        raw = meta.get("max_link_capacity", "1")
+        try:
+            capacity = int(raw)
+        except ValueError:
+            raise ValueError(
+                f"max_link_capacity must be an integer, got: {raw!r}"
+            )
+        if capacity < 1:
+            raise ValueError(
+                f"max_link_capacity must be a positive integer, got {capacity}"
+            )
+        if (name1, name2) in self.connections:
+            raise ValueError(f"Duplicate connection: {name1}-{name2}")
+        conn = Connection(name1, name2, capacity)
+        self.connections[(name1, name2)] = conn
+        self.connections[(name2, name1)] = conn
+
 
 
 if __name__ == "__main__":

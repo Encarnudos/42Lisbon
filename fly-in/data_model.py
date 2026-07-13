@@ -35,11 +35,13 @@ class Connection():
 class Graph():
     def __init__(
             self, zones: dict[str, Zone],
-            start: Zone, end: Zone, nb_drones: int
+            start: Zone, end: Zone, nb_drones: int,
+            adjacency: dict[str, list[str]],
+            connections: dict[tuple[str, str], Connection],
     ) -> None:
         self.zones = zones
         self.start = start
         self.end = end
         self.nb_drones = nb_drones
-        self.adjacency: dict[str, list[str]] = {}
-        self.connections: dict[tuple[str, str], Connection] = {}
+        self.adjacency = adjacency
+        self.connections = connections

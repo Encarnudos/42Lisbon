@@ -54,7 +54,7 @@ class Parser():
             raise ValueError("Map must have exactly one start_hub")
         if self.end is None:
             raise ValueError("Map must have exactly one end_hub")
-        return Graph(self.zones, self.start, self.end, nb_drones)
+        return Graph(self.zones, self.start, self.end, nb_drones, self.adjacency, self.connections)
 
     def parse_metadata(self, text: str) -> dict[str, str]:
         result: dict[str, str] = {}
@@ -104,7 +104,7 @@ class Parser():
         meta = self.parse_metadata(metadata)
         zone_type = meta.get("zone", "normal")
         if zone_type not in VALID_TYPES:
-            raise ValueError(f"Invalid zone type; {zone_type!r}")
+            raise ValueError(f"Invalid zone type: {zone_type!r}")
         raw = meta.get("max_drones", "1")
         try:
             max_drones = int(raw)
@@ -112,11 +112,12 @@ class Parser():
             raise ValueError(f"max_drones must be an integer, got {raw!r}")
         if max_drones < 1:
             raise ValueError(f"max_drones must be positive, got: {max_drones}")
-        zone = Zone(name, x, y, zone_type, max_drones, [])
+        color = meta.get("color", "none")
+        zone = Zone(name, x, y, zone_type, max_drones, [], color)
         self.zones[name] = zone
         if kind == "start":
             if self.start is not None:
-                raise ValueError("Map must be exaclty one start_hub")
+                raise ValueError("Map must be exactly one start_hub")
             self.start = zone
         elif kind == "end":
             if self.end is not None:
@@ -160,6 +161,8 @@ class Parser():
         conn = Connection(name1, name2, capacity)
         self.connections[(name1, name2)] = conn
         self.connections[(name2, name1)] = conn
+        self.adjacency.setdefault(name1, []).append(name2)
+        self.adjacency.setdefault(name2, []).append(name1)
 
 
 

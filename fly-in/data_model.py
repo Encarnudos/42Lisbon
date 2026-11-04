@@ -1,17 +1,18 @@
 class Drone():
     def __init__(
             self, id: str, current_pos: str,
-            path: list[str]
+            path: list[str], index: int = 0
     ) -> None:
         self.id = id
         self.current_pos = current_pos
         self.path = path
+        self.index = index
 
 
 class Zone():
     def __init__(
             self, name: str, x: int, y: int, zone_type: str,
-            max_drones: int, drones: list[Drone]
+            max_drones: int, drones: list[Drone], color: str = "none"
     ) -> None:
         self.name = name
         self.x = x
@@ -19,6 +20,7 @@ class Zone():
         self.zone_type = zone_type
         self.max_drones = max_drones
         self.drones = drones
+        self.color = color
 
 
 class Connection():

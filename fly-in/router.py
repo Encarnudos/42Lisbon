@@ -26,13 +26,13 @@ class Router:
             for neighbor in self.graph.adjacency[name]:
                 if self.graph.zones[neighbor].zone_type == "blocked":
                     continue
-            new_cost = cost + self.cost(self.graph.zones[neighbor])
-            new_prio = priority_count + (1 if self.graph.zones[neighbor].zone_type == "priority" else 0)
-            key = (new_cost, -new_prio)
-            if key < distance.get(neighbor, (float("inf"), 0)):
-                distance[neighbor] = key
-                came_from[neighbor] = name
-                heapq.heappush(queue, (new_cost, -new_prio, neighbor))
+                new_cost = cost + self.cost(self.graph.zones[neighbor])
+                new_prio = priority_count + (1 if self.graph.zones[neighbor].zone_type == "priority" else 0)
+                key = (new_cost, -new_prio)
+                if key < distance.get(neighbor, (float("inf"), 0)):
+                    distance[neighbor] = key
+                    came_from[neighbor] = name
+                    heapq.heappush(queue, (new_cost, -new_prio, neighbor))
         lista = [end_name]
         if end_name not in came_from: 
             return None

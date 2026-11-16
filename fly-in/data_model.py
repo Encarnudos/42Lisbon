@@ -1,25 +1,24 @@
 class Drone():
     def __init__(
-            self, id: str, current_pos: str,
-            path: list[str], index: int = 0
+            self, id: int,
+            path: list[str], index: int = 0, in_flight: bool = False
     ) -> None:
         self.id = id
-        self.current_pos = current_pos
         self.path = path
         self.index = index
+        self.in_flight = in_flight
 
 
 class Zone():
     def __init__(
             self, name: str, x: int, y: int, zone_type: str,
-            max_drones: int, drones: list[Drone], color: str = "none"
+            max_drones: int, color: str = "none"
     ) -> None:
         self.name = name
         self.x = x
         self.y = y
         self.zone_type = zone_type
         self.max_drones = max_drones
-        self.drones = drones
         self.color = color
 
 

@@ -54,7 +54,10 @@ class Parser():
             raise ValueError("Map must have exactly one start_hub")
         if self.end is None:
             raise ValueError("Map must have exactly one end_hub")
-        return Graph(self.zones, self.start, self.end, nb_drones, self.adjacency, self.connections)
+        return Graph(
+            self.zones, self.start, self.end, nb_drones,
+            self.adjacency, self.connections
+            )
 
     def parse_metadata(self, text: str) -> dict[str, str]:
         result: dict[str, str] = {}
@@ -113,7 +116,7 @@ class Parser():
         if max_drones < 1:
             raise ValueError(f"max_drones must be positive, got: {max_drones}")
         color = meta.get("color", "none")
-        zone = Zone(name, x, y, zone_type, max_drones, [], color)
+        zone = Zone(name, x, y, zone_type, max_drones, color)
         self.zones[name] = zone
         if kind == "start":
             if self.start is not None:
@@ -163,19 +166,3 @@ class Parser():
         self.connections[(name2, name1)] = conn
         self.adjacency.setdefault(name1, []).append(name2)
         self.adjacency.setdefault(name2, []).append(name1)
-
-
-
-if __name__ == "__main__":
-    p = Parser()
-    for line in [
-        "hub: bad 3 3 [zone=foo]",
-        "hub: bad-name 1 1",
-        "hub: short 3",
-        "hub: nope 3 3 [max_drones=0]",
-    ]:
-        try:
-            p.parse_zone(line)
-            print(f"NO ERROR (unexpected): {line!r}")
-        except ValueError as e:
-            print(f"OK, raised: {e}")

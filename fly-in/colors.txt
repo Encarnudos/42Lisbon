@@ -1,0 +1,7 @@
+# visual_colors.txt
+nb_drones: 2
+start_hub: start 0 0 [color=green]
+hub: middle 1 0 [color=orange]
+end_hub: end 2 0 [color=red]
+connection: start-middle
+connection: middle-end

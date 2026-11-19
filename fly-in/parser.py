@@ -15,17 +15,18 @@ class Parser():
     def parse(self, filename: str) -> Graph:
         with open(filename, "r") as f:
             lines = f.readlines()
-            clean = [
-                line.strip()
-                for line in lines
-                if line.strip() and not line.strip().startswith("#")
-            ]
-            if not clean:
-                raise ValueError("File is empty or contains no valid lines")
-            first = clean[0]
+        clean = []
+        for line_num, raw in enumerate(lines, start=1):
+            line = raw.strip()
+            if line and not line.startswith("#"):
+                clean.append((line_num, line))
+        if not clean:
+            raise ValueError("File is empty or contains no valid lines")
+        num0, first = clean[0]
+        try:
             if not first.startswith("nb_drones:"):
                 raise ValueError(
-                    "First line must be"
+                    "First line must be "
                     "'nb_drones: <positive_integer>'"
                 )
             value = first.split(":", 1)[1].strip()
@@ -33,15 +34,18 @@ class Parser():
                 nb_drones = int(value)
             except ValueError:
                 raise ValueError(
-                    f"nb_drones must be an integer,"
+                    f"nb_drones must be an integer, "
                     f"got: {value!r}"
                 )
             if nb_drones < 1:
                 raise ValueError(
-                    f"nb_drones must be positive,"
+                    f"nb_drones must be positive, "
                     f"got: {nb_drones}"
                 )
-            for line in clean[1:]:
+        except ValueError as e:
+            raise ValueError(f"line {num0}: {e}")
+        for line_num, line in clean[1:]:
+            try:
                 if line.startswith("start_hub:")\
                         or line.startswith("end_hub:")\
                         or line.startswith("hub:"):
@@ -50,6 +54,8 @@ class Parser():
                     self.parse_connection(line)
                 else:
                     raise ValueError(f"Unknown line type: {line!r}")
+            except ValueError as e:
+                raise ValueError(f"line {line_num}: {e}")
         if self.start is None:
             raise ValueError("Map must have exactly one start_hub")
         if self.end is None:
@@ -64,8 +70,8 @@ class Parser():
         for pair in text.split():
             if "=" not in pair:
                 raise ValueError(
-                    f"Format of metadata should be key=value,"
-                    f" got {pair!r}"
+                    f"Format of metadata should be key=value, "
+                    f"got {pair!r}"
                 )
             key, value = pair.split("=", 1)
             result[key] = value
@@ -97,7 +103,7 @@ class Parser():
             y = int(parts[2])
         except ValueError:
             raise ValueError(
-                f"Zone coordinates must be integers,"
+                f"Zone coordinates must be integers, "
                 f"got {core!r}"
             )
         if "-" in name:
@@ -108,6 +114,8 @@ class Parser():
         zone_type = meta.get("zone", "normal")
         if zone_type not in VALID_TYPES:
             raise ValueError(f"Invalid zone type: {zone_type!r}")
+        if kind in ("start", "end") and zone_type == "blocked":
+            raise ValueError("start_hub and end_hub cannot be blocked")
         raw = meta.get("max_drones", "1")
         try:
             max_drones = int(raw)
@@ -139,7 +147,7 @@ class Parser():
         names = core.split("-")
         if len(names) != 2:
             raise ValueError(
-                f"Connection must be 'name1-name2',"
+                f"Connection must be 'name1-name2', "
                 f"got: {core!r}"
             )
         name1, name2 = names
